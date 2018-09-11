@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="vue.js"></script>
+    <style>
+        body {
+            margin: 150px;
+        }
+
+        #canvas {
+            box-shadow: 0 0 3px 1px #555;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas"></canvas>
+
+    <script src="underscore.js"></script>
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 1000;
+        canvas.height = 600;
+        canvas.style.backgroundColor = '#000';
+
+        class Ball {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                this.r = 40;
+            }
+
+            render() { //绘制小球
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+        class MoveBall extends Ball {
+            constructor(x, y, color) {
+                super(x, y, color);
+                this.dX = _.random(-5, 5);
+                this.dY = _.random(-5, 5);
+                this.dR = _.random(1, 3);
+
+            }
+            upDate() {
+                this.x += this.dX;
+                this.y += this.dY;
+                this.r -= this.dR;
+                if (this.r < 0) {
+                    this.r = 0;
+                }
+            }
+        }
+
+        let ballArr = [];
+        let colorArr = ['red', 'blue', 'yellow', 'purple', 'pink'];
+        canvas.addEventListener('mousemove', function (e) {
+            ballArr.push(new MoveBall(e.offsetX, e.offsetY, colorArr[_.random(0, colorArr.length - 1)]));
+            console.log(ballArr);
+            
+        });
+
+        setInterval(function(){
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+
+            for(let i = 0;i<ballArr.length;i++){
+                ballArr[i].render();
+                ballArr[i].upDate();
+            }
+        },50);
+    </script>
+</body>
+
+</html>
